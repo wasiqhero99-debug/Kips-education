@@ -1,0 +1,60 @@
+{
+  "entities": {
+    "CommunityMessage": {
+      "title": "CommunityMessage",
+      "description": "A public student discussion question or reply regarding the English test",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the message"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Google UID of the student author"
+        },
+        "userName": {
+          "type": "string",
+          "description": "Display name of the author"
+        },
+        "text": {
+          "type": "string",
+          "description": "Content of the question, answer, or study note"
+        },
+        "replyToMessageId": {
+          "type": "string",
+          "description": "Optional ID of message being replied to"
+        },
+        "replyToAuthor": {
+          "type": "string",
+          "description": "Optional author name of message being replied to"
+        },
+        "replyToText": {
+          "type": "string",
+          "description": "Optional snippet of message being replied to"
+        },
+        "likesCount": {
+          "type": "integer",
+          "description": "Total number of student upvotes/likes"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of latest update"
+        }
+      },
+      "required": ["id", "userId", "userName", "text", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/community_messages/{messageId}": {
+      "schema": "CommunityMessage",
+      "description": "Shared real-time community chat messages for student Q&A and replies"
+    }
+  }
+}

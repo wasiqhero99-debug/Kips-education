@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidCommunityMessage(data) {
+      return data.id is string
+        && data.id.size() > 0
+        && data.userId is string
+        && data.userId.size() > 0
+        && data.userName is string
+        && data.userName.size() > 0
+        && data.userName.size() <= 100
+        && data.text is string
+        && data.text.size() > 0
+        && data.text.size() <= 2000
+        && (!('replyToMessageId' in data) || (data.replyToMessageId is string && data.replyToMessageId.size() <= 100))
+        && (!('replyToAuthor' in data) || (data.replyToAuthor is string && data.replyToAuthor.size() <= 100))
+        && (!('replyToText' in data) || (data.replyToText is string && data.replyToText.size() <= 500))
+        && (!('likesCount' in data) || (data.likesCount is int && data.likesCount >= 0))
+        && (data.createdAt is timestamp && data.createdAt <= request.time)
+        && (!('updatedAt' in data) || (data.updatedAt is timestamp && data.updatedAt <= request.time));
+    }
+
+    match /community_messages/{messageId} {
+      allow read: if isAuthenticated();
+
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && isValidCommunityMessage(request.resource.data);
+
+      allow update: if isAuthenticated() && (
+        (
+          isOwner(resource.data.userId)
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.createdAt == resource.data.createdAt
+          && isValidCommunityMessage(request.resource.data)
+        )
+        ||
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likesCount'])
+          && request.resource.data.likesCount is int
+          && request.resource.data.likesCount >= 0
+        )
+      );
+
+      allow delete: if isOwner(resource.data.userId);
+    }
+  }
+}

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="firestore_database_id" translatable="false">ai-studio-android-kipsprep-b324cfc8-292c-498f-b2cc-c7abe3fcac4e</string>
+    <string name="recaptcha_site_key" translatable="false">6Ld0wAwuAAAAAJHqBLCNhE1JD8fENwYxHse3cjjh</string>
+</resources>
